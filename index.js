@@ -5,13 +5,72 @@ function getParams() {
         loanAmt = Number(document.getElementById('loanAmt').value), 
         intRate = Number(document.getElementById('intRate').value)/100, 
         cofRate = Number(document.getElementById('cofRate').value)/100, 
-        initialCust = 10000,
+        initialCust = 1000,
         newCustRate = Number(document.getElementById('custRate').value)/100;
     return [repeatRate, creditScoreAcc, loanAmt, intRate, cofRate, initialCust, newCustRate];
 }
 // function to generate data from formulas and form inputs
 function makeData(args) {
     "use strict";
+    // helper functions
+    // extend loan sequence by one period
+    function add_seq(loans, seqRepayRate, repeatRate) {
+        let seq = [],
+            currPeriod = loans.length + 1,
+            previousSeq = loans[loans.length-1],
+            repayRate = seqRepayRate[loans.length-1];
+        for (j=0; j<previousSeq.length; j++) {
+            if (j < currPeriod-1) {
+                seq.push(0);
+            } 
+            else
+                seq.push(previousSeq[j-1]*repayRate*repeatRate);   
+        }
+        return seq;
+    }
+    // sum array
+    Array.prototype.sum2d = function() {
+        let total = 0, row, n_rows;
+        for(row=0, n_rows=this.length; row<n_rows; row++) {
+            let element, n_cols=this[row].length;
+            for (element=0; element<n_cols; element++) {
+                total += this[row][element];
+            }
+        }
+        return total;
+    };
+     // sum array by period. (ref. Stack Overflow http://tinyurl.com/gvoo37c)
+     function period_totals(array) {
+         var result = array.map(function(row, j) {
+                 return array.map(function(row) {
+                         return row[j]; 
+                 }).reduce(function(a, b) {
+                     return a+b;
+                 }, 0);
+         });
+         return result;
+     }     
+     function closedSeqs(array) {
+         var open = [], curr = [], next = [], closedSeqs = [], totalSeqs = []; 
+         // slice off open loan sequences in period 13
+         for (i=1; i<maxPeriodCalc; i++) {
+             open.push(array[i][maxPeriodDisp]);
+         }
+         // add indexed positions to curr and next arrays
+         for (i=0; i<maxPeriodDisp; i++) {
+            curr.push([0]); next.push([0]);
+         }   
+         // for each sequence length, sum the current and next no. of loans
+         for (i=0;i<maxPeriodDisp;i++) {
+            for (j=0;j<maxPeriodDisp; j++) {
+                curr[i] = Number(curr[i]) + Number(array[i][j]); 
+                next[i] = Number(next[i]) + Number(array[i+1][j+1]);
+            }
+         }
+         closedSeqs.push(_.zipWith(curr, next, function(a,b) { return a - b;}));
+         totalSeqs.push(_.zipWith(open, closedSeqs[0], function(a,b) { return a + b;}));
+         return [closedSeqs[0], totalSeqs[0]];
+     }
     // input parameters
     var repeatRate = args[0],
         creditScoreAcc = args[1],
@@ -41,21 +100,7 @@ function makeData(args) {
         secondLoans.push(firstLoans[i-1]*creditScoreAcc*repeatRate);
     }
     var loansAll = [firstLoans, secondLoans];   
-    // extend loan sequence by one period
-    function add_seq(loans, seqRepayRate, repeatRate) {
-        let seq = [],
-            currPeriod = loans.length + 1,
-            previousSeq = loans[loans.length-1],
-            repayRate = seqRepayRate[loans.length-1];
-        for (j=0; j<previousSeq.length; j++) {
-            if (j < currPeriod-1) {
-                seq.push(0);
-            } 
-            else
-                seq.push(previousSeq[j-1]*repayRate*repeatRate);   
-        }
-        return seq;
-    }
+
     for (i=2; i<maxPeriodCalc; i++) {
         var next_seq = add_seq(loansAll, seqRepayRate, repeatRate);
         loansAll.push(next_seq);
@@ -90,76 +135,30 @@ function makeData(args) {
          grossProfitAll.push(_.zipWith(feesAll[i], defaultedAllAmt[i], cofAll[i],  function(a,b,c) { 
          return a - b - c ;}));
      }
-     // array sum
-     Array.prototype.sum2d = function() {
-         let total = 0, row, n_rows;
-         for(row=0, n_rows=this.length; row<n_rows; row++) {
-             let element, n_cols=this[row].length;
-             for (element=0; element<n_cols; element++) {
-                 total += this[row][element];
-             }
-         }
-         return total;
-     };
-     // totals by period. code obtained from Stack Overflow http://tinyurl.com/gvoo37c
-     function period_totals(array) {
-         var result = array.map(function(row, j) {
-                 return array.map(function(row) {
-                         return row[j]; 
-                 }).reduce(function(a, b) {
-                     return a+b;
-                 }, 0);
-         });
-         return result;
-     }     
-     // transpose array
-     function transpose(array) {
-         let newArray = [];
-         for (i=0; i<array.length; i++) {
-             newArray.push([]);
-         };
-         for (i=0; i<array.length; i++) {
-             for(let j=0; j<array.length; j++) {
-                 newArray[j].push(array[i][j]);
-             };
-         };
-         return newArray;
-     }      
-     function closedSeqs(array) {
-         var open = [], curr = [], next = [], closedSeqs = [], totalSeqs = []; 
-         // slice off open loan sequences in period 13
-         for (i=1; i<maxPeriodCalc; i++) {
-             open.push(array[i][maxPeriodDisp]);
-         }
-         // add indexed positions to curr and next arrays
-         for (i=0; i<maxPeriodDisp; i++) {
-            curr.push([0]); next.push([0]);
-         }   
-         // for each sequence length, sum the current and next no. of loans
-         for (i=0;i<maxPeriodDisp;i++) {
-            for (j=0;j<maxPeriodDisp; j++) {
-                curr[i] = Number(curr[i]) + Number(array[i][j]); 
-                next[i] = Number(next[i]) + Number(array[i+1][j+1]);
-            }
-         }
-         closedSeqs.push(_.zipWith(curr, next, function(a,b) { return a - b;}));
-         totalSeqs.push(_.zipWith(open, closedSeqs[0], function(a,b) { return a + b;}));
-         return [closedSeqs[0], totalSeqs[0]];
-     }           
+           
      // new & repeat customer loan totals by period
-     var oldCustTotalLoans, oldCustRepaidLoans, oldCustDefaultedLoans, newCustRepaidLoans, newCustDefaultedLoans, cumOldLoans, cumNewLoans;
+     var oldCustTotalLoans, oldCustRepaidLoans, oldCustDefaultedLoans, newCustTotalLoans, newCustRepaidLoans, newCustDefaultedLoans, cumOldLoans, cumNewLoans;
      oldCustTotalLoans = period_totals(loansAll.slice(1));
      oldCustRepaidLoans = period_totals(repaidAll.slice(1));
      oldCustDefaultedLoans = period_totals(defaultedAll.slice(1));
+     newCustTotalLoans = loansAll[0];
      newCustRepaidLoans = repaidAll[0];
      newCustDefaultedLoans = defaultedAll[0];
         // new & repeat customer repayment rates by period
      var oldCustRepayRate = [], oldCustDefaultRate = [], newCustRepayRate = [], newCustDefaultRate = [];
      for (i=0;i<maxPeriodDisp;i++) {
-         oldCustRepayRate.push(oldCustRepaidLoans[i]/oldCustTotalLoans[i]);
-         oldCustDefaultRate.push(oldCustDefaultedLoans[i]/oldCustTotalLoans[i]);
-         newCustRepayRate.push(newCustRepaidLoans[i]/newCustTotalLoans[i]);
-         newCustDefaultRate.push(newCustDefaultedLoans[i]/newCustTotalLoans[i]);
+         if (i===0) {
+             oldCustRepayRate.push(0);
+             oldCustDefaultRate.push(0);
+             newCustRepayRate.push(newCustRepaidLoans[i]/newCustTotalLoans[i]);
+             newCustDefaultRate.push(newCustDefaultedLoans[i]/newCustTotalLoans[i]);
+         }
+         else {
+             oldCustRepayRate.push(oldCustRepaidLoans[i]/oldCustTotalLoans[i]);
+             oldCustDefaultRate.push(oldCustDefaultedLoans[i]/oldCustTotalLoans[i]);
+             newCustRepayRate.push(newCustRepaidLoans[i]/newCustTotalLoans[i]);
+             newCustDefaultRate.push(newCustDefaultedLoans[i]/newCustTotalLoans[i]);
+         }
      }
      // new & repeat customer cumulative loan totals by period
      function cumulate(array, periods) {
@@ -195,57 +194,56 @@ function makeData(args) {
          totalCust = d3.sum(totalSeq),
          avgLoansPerCust = totalLoans/totalCust,
          avgInterest = intRate * avgLoansPerCust;
-     // package results for use in index.js
-     var loans=[], summary, old_pct_repaid;       
+     // package results for use in plotCharts()
+     var rates=[], loans=[], summary, old_pct_repaid;       
      // repayment rates
      for(i=0; i<maxPeriodDisp; i++) {
+         rates.push({
+                 period:period[i],
+                 oldCustRepayRate: oldCustRepayRate[i],
+                 newCustRepayRate: newCustRepayRate[i]
+         });
          loans.push({
                  period: period[i],
-                 status: "repaid",
+                 status: "Repaid",
                  customer: "New customers",
                  loans: newCustRepaidLoans[i]
-                 rate: newCustRepayRate[i]
          });
          loans.push({
                  period: period[i],
-                 status: "defaulted",
+                 status: "Defaulted",
                  customer: "New customers",
                  loans: newCustDefaultedLoans[i]
-                 rate: newCustDefaultRate[i]
          });
          loans.push({
                  period: period[i],
-                 status: "repaid",
+                 status: "Repaid",
                  customer: "Repeat customers",
                  loans: oldCustRepaidLoans[i]
-                 rate: oldCustRepayRate[i]
          });
          loans.push({
                  period: period[i],
-                 status: "defaulted",
+                 status: "Defaulted",
                  customer: "Repeat customers",
                  loans: oldCustDefaultedLoans[i]
-                 rate: oldCustDefaultRate
          });
      }            
      summary = {  "npl": npl,
                   "maxPeriod": maxPeriodDisp,
                   "avgLoans": avgLoansPerCust,
                   "avgInt": avgInterest,
-                  "totalGrossProfit": totalGrossProfit,
                   "grossMargin": grossMargin,
                   "intRate": intRate,
-                  "cumOldLoans": cumOldLoans,
-                  "cumNewLoans": cumNewLoans
      };     
-     return [loans, summary];
+     return [rates, loans, summary];
 }
     
 // function to plot charts
 function plotCycles(data) {
     "use strict";
-    var loans = data[0],
-        summary = data[1];
+    var rates = data[0],
+        loans = data[1],
+        summary = data[2];
     // Set margins
     var margin = {
         top: 70,
@@ -260,35 +258,41 @@ function plotCycles(data) {
     // add svg
     var svg0 = dimple.newSvg(".chart1", chart_width, chart_height);
     // add chart
-    var rateChart = new dimple.chart(svg0, loans);
+    var rateChart = new dimple.chart(svg0, rates);
     rateChart.setBounds(margin.left, margin.top, width, height);
-    var x = rateChart.addCategoryAxis("x", ["customer", "period"]);  
-    x.addGroupOrderRule("period");
-    x.addOrderRule(["New customers", "Repeat customers"]);
+    // palette source: http://www.colorhunter.com
+    rateChart.defaultColors = [
+        new dimple.color("#4D555D", "white", 1), // med. gray    
+        new dimple.color("#BAA5CB", "white", 1), // lilac
+    ];
+    var x = rateChart.addCategoryAxis("x", "period");  
     var y1 = rateChart.addMeasureAxis("y", "loans");
-    var s1 = rateChart.addSeries("status", dimple.plot.bar, [x, y1]);
-    s1.aggregate = dimple.aggregateMethod.avg;
-/*    s1.getTooltipText = function (e) {
-        if (e.aggField[0] === "Loans") {
-            return [
-                "Loan cycle: " + e.cx,
-                "Loan repayment rate: " + (e.cy*100).toFixed(1) + "%"];
-        }
-        else if ((e.aggField[0] === "Sequences") && (e.cx === 1)) {
-            return [
-                "Sequence length: " + e.cx + " loan",
-            "Repayment rate: " + (e.cy*100).toFixed(1) + "%"];
-        }
-        else {
-            return [
-                "Sequence length: " + e.cx + " loans",
-            "Repayment rate: " + (e.cy*100).toFixed(1) + "%"];
-        }
-    };    */
-    rateChart.addLegend(350, 35, 100, 80, "left");
+    var y2 = rateChart.addMeasureAxis("y", "oldCustRepayRate");
+    // define y2 axis lower bound
+    var minY = Math.min(d3.min(rates, function(d) {return d.newCustRepayRate;}) - 0.05, 0.50);
+    y2.overrideMin = minY;
+    y2.overrideMax = 1;
+    y2.tickFormat = "%";
+    var y3 = rateChart.addMeasureAxis("y", "newCustRepayRate");
+    y3.overrideMin = minY;
+    y3.overrideMax = 1;
+    y3.hidden = true;
+    var s1 = rateChart.addSeries(["customer","status"], dimple.plot.bar, [x, y1]);
+    s1.data = loans;
+    s1.aggregate = dimple.aggregateMethod.sum;
+    var s2 = rateChart.addSeries("Repeat customer repayment rate", dimple.plot.line, [x, y2]);
+    s2.data = rates.slice(1);
+    s2.lineMarkers = false;
+    var s3 = rateChart.addSeries("New customer repayment rate", dimple.plot.line, [x, y3]);
+    s3.data = rates;
+    s3.lineMarkers = false;
+    rateChart.assignColor("Repeat customer repayment rate", "black");
+    rateChart.assignColor("New customer repayment rate", "#9D9969");
+    rateChart.addLegend(75, 5, 100, 80, "left");
     rateChart.draw();
-    x.titleShape.remove();
-    y1.titleShape.text("Loans (cumulative)"); 
+    x.titleShape.text("loan cycle");
+    y1.titleShape.text("number of loans"); 
+    y2.titleShape.remove();
 }
 
 // display summary results
@@ -401,9 +405,9 @@ function plotNpl(DOMtarget, npl, intRate, lender) {
 // load default plots
 var params = getParams();
 var data = makeData(params);
-plotSummary(data[1]);
+plotSummary(data[2]);
 plotCycles(data);
-plotNpl(".npl1", data[1].npl, data[1].intRate, "This simulation");
+plotNpl(".npl1", data[2].npl, data[2].intRate, "This simulation");
 plotNpl(".npl2", .016, .075, "M-Shwari (Sep 2015)");
 plotNpl(".npl3", .04, .10, "Jumo (Sep 2015)");
 plotNpl(".npl4", .05, .09, "Branch (Dec 2015)");
@@ -414,9 +418,9 @@ d3.select("#btn")
             d3.selectAll("svg").remove();
             params = getParams();
             data = makeData(params);
-            plotSummary(data[1]);
+            plotSummary(data[2]);
             plotCycles(data);
-            plotNpl(".npl1", data[1].npl, data[1].intRate, "This simulation");
+            plotNpl(".npl1", data[2].npl, data[2].intRate, "This simulation");
             plotNpl(".npl2", .016, .075, "M-Shwari (Sep 2015)");
             plotNpl(".npl3", .04, .10, "Jumo (Sep 2015)");
             plotNpl(".npl4", .05, .09, "Branch (Dec 2015)");
