@@ -32,26 +32,38 @@
             <div class="col-md-7">
                 <h3>Price the loan</h3>
                 <p>Interest or fees charged to customers must be high enough to offset losses from unrepaid loans</p>
+                <label for="intRate">Interest rate </label><input name="intRate" id="intRate" class="inputField" type="text" value=7.5>%<br>  
             </div>
             <div class="col-md-5"></div>
             <div class="col-md-7">
                 <h3>How risky are new customers?</h3>
                 <p>Mobile lenders analyze thousands of data points to make lending decisions for customers with no credit history</p>
+                <label for="scoreAcc"><a title="Probability that a new customer will repay their initial loan">Initial credit score accuracy </a></label> <input name="scoreAcc" id="scoreAcc" class="inputField" type="text" value=95>%
             </div>
             <div class="col-md-5"></div>
             <div class="col-md-7">
                 <h3>Simulate the effects of repeat borrowing</h3>
                 <p>Set the percentage of borrowers in good standing at the end of each loan cycle who immediately take out another loan</p>
+                <label for="repeatRate"><a title="Percentage of borrowers in good standing who take out an additional loan soon after repaying the previous loan">Customer repeat rate </a></label><input name="repeatRate" id="repeatRate" class="inputField" type="text" value=90 min=0 max=100 step="any">%
             </div>
             <div class="col-md-5"></div>
             <div class="col-md-7">
                 <h3>How fast is the customer base growing?</h3>
                 <p>Since mobile loans were first launched in late 2012, new customers have grown by an average of X% monthly. </p>
+                <label for="custRate">New customer growth rate each loan cycle </label><input name="custRate" id="custRate" class="inputField" type="text" value=0>%
             </div>
             <div class="col-md-5"></div>
             <div class="col-md-7">
                 <h3>Set the lender’s cost of funds</h3>
                 <p>This is what it costs the lender to get the money to lend to customers, as a percentage of the total amount loaned.</p>
+                <label for="cofRate"><a href="http://www.investopedia.com/terms/c/costoffunds.asp" target="_blank">Cost of funds rate</a> (monthly)</label><input name="cofRate" id="cofRate" class="inputField" type="text" value=1>%
+            </div>
+            <div class="col-md-5"></div>
+            <div class="col-md-7">
+                <h3>Choose the number of loan cycles</h3>
+                <p>Financial results are typically reported every 3, 6 or 12 loans cycles (months).</p>
+                <label for="maxPeriod">Number of loan cycles </label><input name="maxPeriod" id="maxPeriod" class="inputField" type="text" value=12>
+                <input type="button" value="Submit" id="btn" >
             </div>
             <div class="col-md-5"></div>
           </div>
