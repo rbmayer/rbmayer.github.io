@@ -28,17 +28,6 @@ function makeData(args) {
         }
         return seq;
     }
-    // sum array
-    Array.prototype.sum2d = function() {
-        let total = 0, row, n_rows;
-        for(row=0, n_rows=this.length; row<n_rows; row++) {
-            let element, n_cols=this[row].length;
-            for (element=0; element<n_cols; element++) {
-                total += this[row][element];
-            }
-        }
-        return total;
-    };
      // sum array by period. (ref. Stack Overflow http://tinyurl.com/gvoo37c)
      function period_totals(array) {
          var result = array.map(function(row, j) {
