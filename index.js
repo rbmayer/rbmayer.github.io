@@ -2,14 +2,14 @@
 function getParams() {
     var repeatRate = Number(document.getElementById('repeatRate').value)/100,
         creditScoreAcc = Number(document.getElementById('scoreAcc').value)/100,
-        loanAmt = Number(document.getElementById('loanAmt').value), 
+        loanAmt = 15, 
         intRate = Number(document.getElementById('intRate').value)/100, 
         cofRate = Number(document.getElementById('cofRate').value)/100, 
         initialCust = 1000,
         newCustRate = Number(document.getElementById('custRate').value)/100;
     return [repeatRate, creditScoreAcc, loanAmt, intRate, cofRate, initialCust, newCustRate];
 }
-// function to generate data from formulas and form inputs
+// generate simulation data
 function makeData(args) {
     "use strict";
     // helper functions
@@ -28,7 +28,7 @@ function makeData(args) {
         }
         return seq;
     }
-     // sum array by period. (ref. Stack Overflow http://tinyurl.com/gvoo37c)
+     // sum array by period (ref. Stack Overflow http://tinyurl.com/gvoo37c)
      function period_totals(array) {
          var result = array.map(function(row, j) {
                  return array.map(function(row) {
@@ -38,7 +38,8 @@ function makeData(args) {
                  }, 0);
          });
          return result;
-     }     
+     }
+     // return closed & total sequences per loan cycle     
      function closedSeqs(array) {
          var open = [], curr = [], next = [], closedSeqs = [], totalSeqs = []; 
          // slice off open loan sequences in period 13
@@ -60,7 +61,15 @@ function makeData(args) {
          totalSeqs.push(_.zipWith(open, closedSeqs[0], function(a,b) { return a + b;}));
          return [closedSeqs[0], totalSeqs[0]];
      }
-    // input parameters
+     // return cumulative totals
+     function cumulate(array, periods) {
+         var result = [array[0]];
+         for (i=1;i<periods;i++) {
+             result.push(array[i] + result[i-1])
+         }
+         return result
+     }    
+     // get input parameters
     var repeatRate = args[0],
         creditScoreAcc = args[1],
         loanAmt = args[2], 
@@ -68,6 +77,7 @@ function makeData(args) {
         cofRate = args[4], 
         initialCust = args[5],
         newCustRate = args[6];    
+    // generate sequence repayment rates
     var i, j,
         B = 0.995,
         A = Math.round(10000 * (creditScoreAcc - B))/10000,
@@ -75,11 +85,10 @@ function makeData(args) {
         maxPeriodCalc = maxPeriodDisp + 1,
         period = d3.range(1, +maxPeriodCalc + 2),
         seqRepayRate;
-    // calculate sequence repayment rate
     seqRepayRate = period.map(function(d) {
             return Math.round(10000 * (A/d + B))/10000;
     });
-    // calculate loans
+    // calculate loans by period (col) & sequence length (row)
     var firstLoans = [initialCust];
     for (i=1; i<maxPeriodCalc; i++) {           
         firstLoans.push(firstLoans[i-1]*(1 + newCustRate));
@@ -94,7 +103,7 @@ function makeData(args) {
         var next_seq = add_seq(loansAll, seqRepayRate, repeatRate);
         loansAll.push(next_seq);
     }
-    // calculate series
+    // derive remaining performance variables
     var repaidAll=[],
         cofAll = [],
         defaultedAll = [],
@@ -123,17 +132,27 @@ function makeData(args) {
          defaultedAllAmt.push(defaultedAll_i.map(function(d) {return d * loanAmt;}));
          grossProfitAll.push(_.zipWith(feesAll[i], defaultedAllAmt[i], cofAll[i],  function(a,b,c) { 
          return a - b - c ;}));
-     }
-           
-     // new & repeat customer loan totals by period
-     var oldCustTotalLoans, oldCustRepaidLoans, oldCustDefaultedLoans, newCustTotalLoans, newCustRepaidLoans, newCustDefaultedLoans, cumOldLoans, cumNewLoans;
+     }          
+     // total loans by period
+     var loans = period_totals(loansAll),
+         repaid = period_totals(repaidAll),
+         defaulted = period_totals(defaultedAll),
+         grossProfit = period_totals(grossProfitAll),
+         totalGrossProfit = d3.sum(grossProfit);
+     // get grand totals
+     var totalLoans = d3.sum(loans.slice(0,maxPeriodDisp)),
+         totalRepaid = d3.sum(repaid.slice(0,maxPeriodDisp)),
+         totalDefaulted = d3.sum(defaulted.slice(0,maxPeriodDisp)),
+         grossMargin = totalGrossProfit/totalLoans;
+     // break out by new & repeat customers
+     var oldCustTotalLoans, oldCustRepaidLoans, oldCustDefaultedLoans, newCustTotalLoans, newCustRepaidLoans, newCustDefaultedLoans;
      oldCustTotalLoans = period_totals(loansAll.slice(1));
      oldCustRepaidLoans = period_totals(repaidAll.slice(1));
      oldCustDefaultedLoans = period_totals(defaultedAll.slice(1));
      newCustTotalLoans = loansAll[0];
      newCustRepaidLoans = repaidAll[0];
      newCustDefaultedLoans = defaultedAll[0];
-        // new & repeat customer repayment rates by period
+     // get repayment rates by new & repeat customers
      var oldCustRepayRate = [], oldCustDefaultRate = [], newCustRepayRate = [], newCustDefaultRate = [];
      for (i=0;i<maxPeriodDisp;i++) {
          if (i===0) {
@@ -149,32 +168,16 @@ function makeData(args) {
              newCustDefaultRate.push(newCustDefaultedLoans[i]/newCustTotalLoans[i]);
          }
      }
-     // new & repeat customer cumulative loan totals by period
-     function cumulate(array, periods) {
-         var result = [array[0]];
-         for (i=1;i<periods;i++) {
-             result.push(array[i] + result[i-1])
-         }
-         return result
-     }
-     oldCustRepaidLoans = cumulate(oldCustRepaidLoans, maxPeriodDisp);
-     oldCustDefaultedLoans = cumulate(oldCustDefaultedLoans, maxPeriodDisp);
-     newCustRepaidLoans = cumulate(newCustRepaidLoans, maxPeriodDisp);
-     newCustDefaultedLoans = cumulate(newCustDefaultedLoans, maxPeriodDisp);
-     cumOldLoans = oldCustRepaidLoans[oldCustRepaidLoans.length - 1] + oldCustDefaultedLoans[oldCustDefaultedLoans.length - 1];
-     cumNewLoans = newCustRepaidLoans[newCustRepaidLoans.length - 1] + newCustDefaultedLoans[newCustDefaultedLoans.length - 1];
-     // array totals by period
-     var loans = period_totals(loansAll),
-         repaid = period_totals(repaidAll),
-         defaulted = period_totals(defaultedAll),
-         grossProfit = period_totals(grossProfitAll),
-         totalGrossProfit = d3.sum(grossProfit),
-         totalLoans = d3.sum(loans.slice(0,maxPeriodDisp)),
-         totalRepaid = d3.sum(repaid.slice(0,maxPeriodDisp)),
-         totalDefaulted = d3.sum(defaulted.slice(0,maxPeriodDisp)),
-         grossMargin = totalGrossProfit/totalLoans;
+     // get cumulative totals by new & repeat customers
+     var oldCustRepaidLoansCm, oldCustDefaultedLoansCm, newCustRepaidLoansCm, newCustDefaultedLoansCm, cumOldLoans, cumNewLoans;
+     oldCustRepaidLoansCm = cumulate(oldCustRepaidLoans, maxPeriodDisp);
+     oldCustDefaultedLoansCm = cumulate(oldCustDefaultedLoans, maxPeriodDisp);
+     newCustRepaidLoansCm = cumulate(newCustRepaidLoans, maxPeriodDisp);
+     newCustDefaultedLoansCm = cumulate(newCustDefaultedLoans, maxPeriodDisp);
+     cumOldLoans = oldCustRepaidLoans[oldCustRepaidLoans.length - 1] + oldCustDefaultedLoansCm[oldCustDefaultedLoansCm.length - 1];
+     cumNewLoans = newCustRepaidLoansCm[newCustRepaidLoansCm.length - 1] + newCustDefaultedLoansCm[newCustDefaultedLoansCm.length - 1];
      var npl = totalDefaulted/totalLoans
-     // sequences and customers
+     // total sequences and customers
      var Seqs = closedSeqs(loansAll),
          closedSeq = Seqs[0],
          totalSeq = Seqs[1],
@@ -184,7 +187,7 @@ function makeData(args) {
          avgLoansPerCust = totalLoans/totalCust,
          avgInterest = intRate * avgLoansPerCust;
      // package results for use in plotCharts()
-     var rates=[], loans=[], summary, old_pct_repaid;       
+     var rates=[], loans=[], summary;       
      // repayment rates
      for(i=0; i<maxPeriodDisp; i++) {
          rates.push({
