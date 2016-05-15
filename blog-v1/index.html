@@ -266,7 +266,7 @@
     <div class="modal" id="nplPlot" role="dialog">
         <div class="modal-dialog modal-sm">
             <div class="modal-header">
-                <p class="caption">This chart shows the interest rate that exactly balances out losses from defaulted loans given the non-performing loan (NPL) rate.</p>
+                <p class="caption">This chart shows the interest rate that exactly balances out losses from defaulted loans given the non-performing loan (NPL) rate. The spread must be widened further to cover other expenses like COF and operating costs.</p>
             </div>
           <div class="modal-body" id="plotContainer">
             <p class="chartTitle">Interest Rate vs NPL</p>
@@ -340,7 +340,7 @@
                 .attr("d", interestLine(data));
             // http://www.d3noob.org/2014/07/my-favourite-tooltip-method-for-line.html
             var lineSvg = svg6.append("g");
-            var bisectRate = d3.bisector(function(d) { return d.rateX; }).left;
+            var bisectRate = d3.bisector(function(d) { return +d.rateX; }).left;
             lineSvg.append("path")
                 .attr("class", "line1")
                 .attr("d", nplLine(data));
@@ -399,27 +399,36 @@
                 var x0 = x.invert(d3.mouse(this)[0]),              
                     i = bisectRate(data, x0, 1),                   
                     d0 = data[i - 1],                              
-                    d1 = data[i],                                  
-                    d = x0 - d0.rateX > d1.rateX - x0 ? d1 : d0;
+                    d1 = data[i],    
+                    d;
+                    if (isNaN(d1)) {
+                    	d = d0;
+                    }
+                    else if (isNaN(d0)) {
+                    	    d = d1;
+                    }
+                    else {
+                    	    d = x0 - +d0.rateX > +d1.rateX - x0 ? d1 : d0;
+                    }
                 focus.select("circle.y")
-                    .attr("transform", "translate(" + x(d.rateX) + "," + y(d.NPL) + ")");
+                    .attr("transform", "translate(" + x(+d.rateX) + "," + y(+d.NPL) + ")");
                 focus.select("text.y1")
-                    .attr("transform", "translate(" + x(d.rateX) + "," +y(d.NPL) + ")")
-                    .text("Interest rate: " + pct(d.rateX));
+                    .attr("transform", "translate(" + x(+d.rateX) + "," +y(+d.NPL) + ")")
+                    .text("Interest rate: " + pct(+d.rateX));
                 focus.select("text.y2")
-                    .attr("transform", "translate(" + x(d.rateX) + "," + y(d.NPL) + ")")
-                    .text("Interest rate: " + pct(d.rateX)); 
+                    .attr("transform", "translate(" + x(+d.rateX) + "," + y(+d.NPL) + ")")
+                    .text("Interest rate: " + pct(+d.rateX)); 
                 focus.select("text.y3")
-                    .attr("transform", "translate(" + x(d.rateX) + "," + y(d.NPL) + ")")
-                    .text("NPL: " + pct(d.NPL));
+                    .attr("transform", "translate(" + x(+d.rateX) + "," + y(+d.NPL) + ")")
+                    .text("NPL: " + pct(+d.NPL));
                 focus.select("text.y4")
-                    .attr("transform", "translate(" + x(d.rateX) + "," + y(d.NPL) + ")")
+                    .attr("transform", "translate(" + x(+d.rateX) + "," + y(+d.NPL) + ")")
                     .text("NPL: " + pct(d.NPL));
                 focus.select(".x")
-                    .attr("transform","translate(" + x(d.rateX) + "," + y(d.rateX) + ")")
-                    .attr("y2", x(d.rateX));
+                    .attr("transform","translate(" + x(+d.rateX) + "," + y(+d.rateX) + ")")
+                    .attr("y2", x(+d.rateX));
                 focus.select(".y")
-                    .attr("transform","translate(" + width * -1 + "," + y(d.NPL) + ")")
+                    .attr("transform","translate(" + width * -1 + "," + y(+d.NPL) + ")")
                     .attr("x2", width+width);
             }
           </script>
