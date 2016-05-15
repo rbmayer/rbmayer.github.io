@@ -352,7 +352,7 @@ function makeSelector(data, svgClass, inputClass, everyNth) {
       .style("fill", "#cccccc");
     var selector = new dimple.chart(svg1, chartData);
     selector.setBounds(margin.left, margin.top, selectorWidth, selectorHeight);
-    selector.defaultColors = [ new dimple.color("#cccccc", "#4d555d", 1) ]; // med. gray
+    selector.defaultColors = [ new dimple.color("#cccccc", "#cccccc", 1) ]; // med. gray
     var x = selector.addCategoryAxis("x", "xVal");
     x.overrideMin = (inputClass === "maxPeriod") ?  range.lower : 100*range.lower;
     x.overrideMax = (inputClass === "maxPeriod") ?  range.upper : 100*range.upper;
@@ -366,7 +366,7 @@ function makeSelector(data, svgClass, inputClass, everyNth) {
     s.addEventHandler("mouseover", function (e) {});
     // on click insert x-value into form
     s.addEventHandler("click", function (e) {
-        s.shapes.style("fill", "#cccccc").style("stroke", "#4d555d").style("stroke-width", 1);
+        s.shapes.style("fill", "#cccccc").style("stroke", "#cccccc");
         var recte = e.selectedShape[0];    
         d3.selectAll(recte).style("fill", "#2FA15A").style("stroke", "#2FA15A");
         var input = document.getElementById(inputClass);
