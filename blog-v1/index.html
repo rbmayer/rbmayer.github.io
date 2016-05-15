@@ -74,8 +74,8 @@
         <div class="row">         
             <div class="col-md-6">
                 <hr></hr>
-                <h4>Price the loan</h4>
-                <p>Interest or fees charged to customers must be high enough to offset losses from unrepaid loans</p>               
+                <h4>How fast is the customer base growing?</h4>
+                <p>Since 2012, Kenya's mobile loan market has been expanding rapidly.</p>
             </div>
             <div class="col-md-6">
                 <hr></hr>
@@ -85,14 +85,15 @@
         </div>
         <div class="row">
             <div class="col-md-3">
-                <label>Interest rate (%)</label>
-            </div>
-            <div class="col-md-1">
-                <input name="intRate" id="intRate" class="inputField" type="text" value=7.5 size=2>
+                <label for="custRate"><a title="Example: Loan cycle 1 new customers = 100. New customer growth rate = 5%. Loan cycle 2 new customers = 105.">New customer growth per loan cycle (%)</a></label>
+            </div>         
+            <div class="col-md-1">                
+                  <input name="custRate" id="custRate" class="inputField" type="text" value=2 size=2>
             </div>
             <div class="col-md-2">
-                <g class=".selector selector-intRate"></g>  
+                <g class=".selector selector-custRate"></g>  
             </div>
+            
             <div class="col-md-3">
                 <label for="scoreAcc"><a title="Probability that a new customer will repay their loan">Initial credit score accuracy (%)</a></label>
             </div>         
@@ -111,9 +112,9 @@
             </div>
             <div class="col-md-6">
                 <hr></hr>
-                <h4>How fast is the customer base growing?</h4>
-                <p>Since 2012, Kenya's mobile loan market has been expanding rapidly.</p>
-            </div>
+                <h4>Price the loan</h4>
+                <p>Interest or fees charged to customers must be high enough to offset losses from unrepaid loans</p>               
+            </div>           
         </div>
         <div class="row">
             <div class="col-md-3">
@@ -126,13 +127,13 @@
                 <g class=".selector selector-repeatRate"></g>  
             </div>
             <div class="col-md-3">
-                <label for="custRate"><a title="Example: Loan cycle 1 new customers = 100. New customer growth rate = 5%. Loan cycle 2 new customers = 105.">New customer growth per loan cycle (%)</a></label>
-            </div>         
-            <div class="col-md-1">                
-                  <input name="custRate" id="custRate" class="inputField" type="text" value=2 size=2>
+                <label>Interest rate (%)</label>
+            </div>
+            <div class="col-md-1">
+                <input name="intRate" id="intRate" class="inputField" type="text" value=7.5 size=2>
             </div>
             <div class="col-md-2">
-                <g class=".selector selector-custRate"></g>  
+                <g class=".selector selector-intRate"></g>  
             </div>
         </div>
         <div class="row">         
