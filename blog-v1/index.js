@@ -177,7 +177,7 @@ function makeData(args) {
      oldCustDefaultedLoansCm = cumulate(oldCustDefaultedLoans, maxPeriodDisp);
      newCustRepaidLoansCm = cumulate(newCustRepaidLoans, maxPeriodDisp);
      newCustDefaultedLoansCm = cumulate(newCustDefaultedLoans, maxPeriodDisp);
-     cumOldLoans = oldCustRepaidLoans[oldCustRepaidLoans.length - 1] + oldCustDefaultedLoansCm[oldCustDefaultedLoansCm.length - 1];
+     cumOldLoans = oldCustRepaidLoansCm[oldCustRepaidLoansCm.length - 1] + oldCustDefaultedLoansCm[oldCustDefaultedLoansCm.length - 1];
      cumNewLoans = newCustRepaidLoansCm[newCustRepaidLoansCm.length - 1] + newCustDefaultedLoansCm[newCustDefaultedLoansCm.length - 1];
      var npl = totalDefaulted/totalLoans
      // total sequences and customers
