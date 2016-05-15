@@ -187,6 +187,9 @@
                 $("#myModalDiv").html(data).fadeIn();
             });
         });
+        $("a#nplPlot").on('hidden.bs.modal', '.modal', function () {
+            $(this).removeData('bs.modal');
+        });
     });
     
     </script>
@@ -250,9 +253,9 @@
         
         <h3>Conclusions</h3>
         
-        <p>This analysis suggests that mobile loan prices in Kenya are healthy overall, with a fair likelihood of some overpricing for the lowest-risk customers. Competitive rate options exist for those who make the effort to shop around, and new entrants are joining the market to target those customers and fill a variety of SME and consumer niches. Market indicators tracking repeat borrower behavior and cumulative interest paid would help regulators, consumer protection analysts and financial education providers respond to market trends in more targeted and effective ways. 
+        <p>This analysis suggests that profit margins in Kenya are healthy for lenders that have cracked the credit scoring problem. Some products are priced high relative to reported NPLs, especially for the lowest-risk customers. Competitive rate options exist for those who make the effort to shop around, and the market is attracting many new entrants who will drive price and feature competition over time. Market indicators tracking repeat borrower behavior and cumulative interest paid would help regulators, consumer protection analysts and financial education providers respond to market trends in more targeted and effective ways. 
         
-        <p>The purpose of this analysis is not to level accusations of overpricing against mobile lenders, as the market is competitive and prices will necessarily evolve over time. The low NPL rates evidenced in Kenya thus far have demonstrated that the risks of mass market lending in a lower middle income country can be successfully managed. The combination of data-driven behavioral credit scoring algorithms, attention to user experience management, the use of scalable digital delivery channels, and institutional arrangements to track loan defaulters has proven to be a successful model. The transparency and accessibility of mobile money payment systems in Kenya have attracted both domestic banks and foreign venture-backed lenders to enter the market. Over time, mobile lenders that survive will enhance competition and help price levels become better differentiated among risk classes. The market is already showing signs of this process.</p>
+        <p>The low NPL rates evidenced in Kenya thus far have demonstrated that the risks of mass market lending in a lower middle income country can be successfully managed. The combination of data-driven behavioral credit scoring algorithms, attention to user experience management, the use of scalable digital delivery channels, and institutional arrangements to track loan defaulters has proven to be a successful model. The transparency and accessibility of mobile money payment systems in Kenya have attracted both domestic banks and foreign venture-backed lenders to enter the market. Over time, mobile lenders that survive will enhance competition and help price levels become better differentiated among risk classes. The market is already showing signs of this process.</p>
         <br>
         <hr></hr>
         <h4>Notes </h4>
@@ -278,12 +281,12 @@
             var rate = d3.range(0, 1.01, 0.005),
                 npl, 
                 i,
-                data = [];
+                nplData = [];
             npl = rate.map(function(d) { 
                 return d / (1 + d);
             });
             for (i=0; i<202; i++) {
-                data.push({
+                nplData.push({
                     rateX: rate[i],
                     NPL: npl[i],
                     rateY: rate[i]        
@@ -315,7 +318,7 @@
             y.domain([0, 1.0]);
             svg6.append("path")
                 .attr("class", "line1")
-                .attr("d", nplLine(data));
+                .attr("d", nplLine(nplData));
             svg6.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0," + height + ")")
@@ -337,13 +340,13 @@
                 .text("NPL rate");
             svg6.append("path")
                 .attr("class", "line2")
-                .attr("d", interestLine(data));
+                .attr("d", interestLine(nplData));
             // http://www.d3noob.org/2014/07/my-favourite-tooltip-method-for-line.html
             var lineSvg = svg6.append("g");
             var bisectRate = d3.bisector(function(d) { return +d.rateX; }).left;
             lineSvg.append("path")
                 .attr("class", "line1")
-                .attr("d", nplLine(data));
+                .attr("d", nplLine(nplData));
             var focus = svg6.append("g").style("display", "none");
             focus.append("line")
                 .attr("class", "x")
@@ -397,9 +400,9 @@
             function mousemove() {
                 var pct = d3.format(".1%");
                 var x0 = x.invert(d3.mouse(this)[0]),              
-                    i = bisectRate(data, x0, 1),                   
-                    d0 = data[i - 1],                              
-                    d1 = data[i],    
+                    i = bisectRate(nplData, x0, 1),                   
+                    d0 = nplData[i - 1],                              
+                    d1 = nplData[i],    
                     d;
                     if (isNaN(d1)) {
                     	d = d0;
