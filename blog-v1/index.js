@@ -143,7 +143,6 @@ function makeData(args) {
          loanAmounts = period_totals(loanAmountsAll);
      // get grand totals
      var totalLoans = d3.sum(loans.slice(0,maxPeriodDisp)),
-         totalRepaid = d3.sum(repaid.slice(0,maxPeriodDisp)),
          totalDefaulted = d3.sum(defaulted.slice(0,maxPeriodDisp)),
          avgTotalLoans = d3.mean(loanAmounts.slice(0,maxPeriodDisp)),
          grossMargin = totalGrossProfit/avgTotalLoans;
@@ -156,37 +155,20 @@ function makeData(args) {
      newCustRepaidLoans = repaidAll[0];
      newCustDefaultedLoans = defaultedAll[0];
      // get repayment rates
-     var oldCustRepayRate = [], oldCustDefaultRate = [], newCustRepayRate = [], newCustDefaultRate = [];
+     var oldCustRepayRate = [], newCustRepayRate = [];
      for (i=0;i<maxPeriodDisp;i++) {
          if (i===0) {
              oldCustRepayRate.push(0);
-             oldCustDefaultRate.push(0);
              newCustRepayRate.push(newCustRepaidLoans[i]/newCustTotalLoans[i]);
-             newCustDefaultRate.push(newCustDefaultedLoans[i]/newCustTotalLoans[i]);
          }
          else {
              oldCustRepayRate.push(oldCustRepaidLoans[i]/oldCustTotalLoans[i]);
-             oldCustDefaultRate.push(oldCustDefaultedLoans[i]/oldCustTotalLoans[i]);
              newCustRepayRate.push(newCustRepaidLoans[i]/newCustTotalLoans[i]);
-             newCustDefaultRate.push(newCustDefaultedLoans[i]/newCustTotalLoans[i]);
          }
      }
-     // get cumulative totals
-     var oldCustRepaidLoansCm, oldCustDefaultedLoansCm, newCustRepaidLoansCm, newCustDefaultedLoansCm, cumOldLoans, cumNewLoans;
-     oldCustRepaidLoansCm = cumulate(oldCustRepaidLoans, maxPeriodDisp);
-     oldCustDefaultedLoansCm = cumulate(oldCustDefaultedLoans, maxPeriodDisp);
-     newCustRepaidLoansCm = cumulate(newCustRepaidLoans, maxPeriodDisp);
-     newCustDefaultedLoansCm = cumulate(newCustDefaultedLoans, maxPeriodDisp);
-     cumOldLoans = oldCustRepaidLoansCm[oldCustRepaidLoansCm.length - 1] + oldCustDefaultedLoansCm[oldCustDefaultedLoansCm.length - 1];
-     cumNewLoans = newCustRepaidLoansCm[newCustRepaidLoansCm.length - 1] + newCustDefaultedLoansCm[newCustDefaultedLoansCm.length - 1];
-     var npl = totalDefaulted/totalLoans
      // total sequences and customers
-     var Seqs = closedSeqs(loansAll),
-         closedSeq = Seqs[0],
-         totalSeq = Seqs[1],
-         SeqsRepaid = closedSeqs(repaidAll),
-         seqRepaid = SeqsRepaid[0],
-         totalCust = d3.sum(totalSeq),
+     var npl = totalDefaulted/totalLoans
+     var totalCust = d3.sum(newCustTotalLoans.slice(0, maxPeriodDisp)),
          avgLoansPerCust = totalLoans/totalCust,
          avgInterest = intRate * avgLoansPerCust;
      // package results for use in plotCharts()
