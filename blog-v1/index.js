@@ -226,13 +226,11 @@ function plotCycles(data) {
         chart_width = "100%",
         chart_height = 250,
         width = "90%",
-        height = "80%",
+        height = chart_height - margin.top - margin.bottom,
         xlegend1 = 220,
         xlegend2 = xlegend1 + 15,
         xlegend3 = xlegend2 + 40,
         xlegend4 = xlegend3 + 15;
-//    width = chart_width - margin.left - margin.right,
-//    height = chart_height - margin.top - margin.bottom;
     // add svg
     var svg0 = dimple.newSvg(".chart1", chart_width, chart_height);
     svg0.append("g")
@@ -285,12 +283,14 @@ function plotCycles(data) {
     s1.barGap = 0.2;
     s1.getTooltipText = function(e) {
         return ["Loan cycle: " + e.xField[1],
+            "Number of " + e.aggField[1] + " loans: " + (e.aggField[1] === "Defaulted" ? d3.format(",.0f")(e.yValue) : d3.format(",.0f")(e.cy)),
             (e.aggField[1] === "Defaulted" && e.cx === "New customers") ? ("New customer default rate: " + d3.format(".1%")(e.yValue/e.cy)) : (e.aggField[1] === "Defaulted" && e.cx === "Repeat customers") ? ("Repeat customer default rate: " + d3.format(".1%")(e.yValue/e.cy)) : null ];
     }
     rateChart.staggerDraw = true;
     rateChart.draw(500);
     x.titleShape.remove();
     y1.titleShape.remove(); 
+    y1.gridlineShapes.selectAll("line").attr("stroke-dasharray", "2,2");
 }
 
 // display results
