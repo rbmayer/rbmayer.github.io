@@ -1,9 +1,78 @@
+@import url(https://fonts.googleapis.com/css?family=Fira+Sans:300, 500);
+@import url(https://fonts.googleapis.com/css?family=Fira+Mono:400,700);
+/* mm */
+body {
+  font-family: "Fira Sans", sans-serif;
+  font-weight: 300;
+  margin: 4em 1em;
+}
 
+h1 { text-align: center; }
+
+h1, h2, h3, h4 { 
+  font-family: "PT Serif", serif;
+  font-weight: 700;
+  margin: .8em 0 .4em 0;
+}
+
+h3 { font-size: 1.75em; }
+
+h4 { 
+  font-size: 1.25em; 
+}
+
+input { 
+  text-align: center;
+  font-weight: bold;
+}
+
+label {
+  margin-top: .5em;
+}
+
+.intro {
+  font-size: 1.125em;
+  padding-bottom: 1.2em;
+}
+
+.intro a {
+  font-weight: 500;
+}
+
+.subhed {
+  text-align: center;
+  font-style: italic;
+}
+
+#datavizbox {
+  border: 1px solid #ccc;
+  margin: 1.4em 0;
+  padding: 1em 2.4em;
+}
+
+.byline {
+    text-align: center;
+    font-size: 1em;
+    font-style: italic;
+    margin: .75em 0 1.25em 0;
+}
+/* end mm */
 
 .row {
     border-top: 2px;
     border-color: #cccccc;
 }
+
+/* mm */
+.container {
+  padding: 0;
+}
+
+.container p {
+  font-size: 1.125em;
+  line-height: 1.6em;
+}
+/* end mm */
 
 .top-right {
     padding-left: 50px;
@@ -41,10 +110,6 @@ text.dimple-tooltip {
 }
 .noteBody {
     color: #337ab7;
-}
-.byline {
-    color: #999;
-    font-size: 10px;
 }
 
 .caption {
