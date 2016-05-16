@@ -74,17 +74,39 @@ label {
 }
 /* end mm */
 
-.top-right {
-    padding-left: 50px;
+.hr-results {
+    margin-top: 30px;
+    margin-bottom: 5px;
 }
 
-.gross-margin {
-    width: 50%;
-    height: 20%;
-    color: black;  
-    border-color: #B4C38E;
-    background-color: #B4C38E;
-    font-size: 20px;
+.no-padding {
+    margin: 0 0 0 0 !important;
+}
+
+.dataviztext {
+    font-family: "Fira Sans", sans-serif;
+    font-size: .8em !important;
+    font-weight: 300;
+}
+
+.dataviztext-sm {
+    font-family: "Fira Sans", sans-serif;
+    font-size: .6em !important;
+    font-weight: 300;
+    margin-bottom: 0 !important;
+}
+
+.dataviztext-md {
+    font-family: "Fira Sans", sans-serif;
+    font-size: .8em !important;
+    font-weight: 300;
+    margin-bottom: 0 !important;
+}
+
+.results {
+    font-family: "PT Serif", serif;
+    font-size: 1.8em !important;
+    font-weight: 600;
 }
 
 .selector {

@@ -28,11 +28,41 @@
        
         <div id="datavizbox" class="container">
           <div class="row">
-            <div class="col-md-6 top">
+            <div class="col-md-12 top">
                 <h3>Loans to New and Repeat Customers</h3>
-                <p>Repeat customers improve overall repayment rates and accumulate fees while new customers are key to growth</p>
-                <p class="chart1"></p>
+                <p class="dataviztext">Repeat customers improve overall repayment rates and accumulate fees while new customers are key to growth</p><br>
             </div>
+          </div>
+          <div class="row">
+            <div class="col-md-9 chart1"></div>
+            <div class="col-md-3">
+                <table>
+                    <tr>
+                        <hr class="hr-results"></hr>
+                        <p class="dataviztext-md"><a id="pop" href="#" data-toggle="popover" data-trigger="focus" data-placement="auto left" title="How Lender's Gross Margin is Calculated" data-content="In this model, Gross Margin is calculated as (Interest Received - COF - Loan Losses)/(Average Total Loans). This is a cumulative (rather than annualized) measure of return over the number of loan cycles used as input to the model. The metric is 'gross' because it does not include non-interest operating expenses or taxes.">LENDER'S GROSS MARGIN</A></p>
+                        <g class="gross-margin results"></g>
+                    </tr>
+                    <tr>
+                        <hr class="no-padding"></hr>
+                        <p class="dataviztext-md">NPL</p>
+                        <g class="npl results"></g>
+                    </tr>
+                    <tr>
+                        <hr class="no-padding"></hr>
+                        <p class="dataviztext-md">AVERAGE LOANS PER CUSTOMER</p>
+                        <g class="seq-len results"></g>
+                    </tr>
+                    <tr>
+                        <hr class="no-padding"></hr>
+                        <p class="dataviztext-md">AVERAGE INTEREST PER CUSTOMER</p>
+                        <g class="int-per-cust results"></g>
+                    </tr>
+                </table>
+            </div>
+          </div>  
+
+<!--
+/* ---------------------------------------------------------------------------*/
             <div class="col-md-6 top top-right text-center">
                 <h3><a id="pop" href="#" data-toggle="popover" data-trigger="focus" data-placement="auto left" title="How Lender's Gross Margin is Calculated" data-content="In this model, Gross Margin is calculated as (Interest Received - COF - Loan Losses)/(Average Total Loans). This is a cumulative (rather than annualized) measure of return over the number of loan cycles used as input to the model. The metric is 'gross' because it does not include non-interest operating expenses or taxes.">Lender’s Gross Margin</a></h3>
                 <button type="button" class="btn btn-primary btn-md gross-margin results"><g class="gross-margin  results"></g></button>
@@ -62,8 +92,9 @@
                         </tr>
                      </tbody>
                 </table>
-            </div>
-        </div>
+            </div>          
+/* ---------------------------------------------------------------------------*/
+-->
         <div class="row">         
             <div class="col-md-6">
                 <hr></hr>
@@ -177,11 +208,13 @@
     
     </script>
     
+    <h3><a name="HowPayday">Mobile Loan Products in Kenya</a></h3>
+    
     <p>Kenya's mobile money sector has attracted widespread international attention for transforming the financial opportunities of the country's unbanked and underbanked population. The country has developed a thriving market in mobile loans: instantly approved personal loans, usually unsecured, managed via mobile phone. The loans are typically $15 - $20 in value, with a 30-day repayment term and a fee ranging from 2% to 10% of the loan amount. In Kenya's economy, mobile loans serve niches filled in other markets by credit cards, payday loans, checking account overdrafts and revolving lines of credit.  The three-year <a title="Compund Annual Growth Rate">CAGR</a> in the personal lending sector in Kenya is estimated at 18% by BPI Bank's equity research service <a name="noteBody1" class="noteBody" href="#note1">[1]</a>. This high rate of growth suggests that suppressed demand is quickly giving way to a broadening of financial inclusion.  Between November 2012 and December 2015, mobile lenders disbursed total loans valued at more than $820 million dollars <a name="noteBody2" class="noteBody" href="#note2">[2]</a>.</p>
         
     <p>Most mobile loan products in Kenya have thus far retained a pricing structure characteristic of payday loans, namely short repayment terms with high annual percentage rates (APRs). The fees of the top Kenyan mobile lenders generate APRs ranging from 24% to 120% <a name="noteBody3" class="noteBody" href="#note3">[3]</a>. Nevertheless, interest rates that intuitively seem high are not necessarily unjustified if the loans are priced to serve customer segments with correspondingly high levels of credit risk. (<a data-toggle="modal" href="#" data-target="#nplPlot">Click here</a> to explore this concept further). Conventional payday lenders argue that high rates are necessary to offset the costs of high-risk borrowers and high operating costs due to storefront overheads, customer acquisition and loan processing costs. How can we evaluate whether the high APRs seen in Kenya really are justified, or whether there are signs of overpricing? One way would be to look at the sector's non-performing loan (NPL) rates as well as the returns being generated. If mobile loans are earning disproportionate returns compared to comparable financial services, this would tend to confirm overpricing in the market. Since financial reports specific to this segment are not generally published, we can use a model to estimate lender's gross margin and other performance results based on typical features of the mobile loan products reported in Kenya. </p>  
         
-        <h3><a name="HowPayday">Low NPLs Suggest Effective Risk Management</a></h3>
+        <h3>Low NPLs Suggest Effective Risk Management</h3>
         
         <p>The model illustrates the interplay of commercial factors that determine lender profitability in this type of business: interest rates and NPL rates, risk management through credit scoring, customer mix between new and repeat borrowers. Because Kenya's mobile loan services generally cut off credit at the first instance of non-repayment, the model reflects the fact that repeat borrowers tend to have lower default rates than new customers while driving up transaction volumes. On the cost side, the model's measure of gross margin ensures that COF and loan losses are accounted for. It does not include non-interest operating expenses, as there was no data on which to base an estimate, or taxes. As a result the model is most useful for assessing whether interest rates are priced high enough to cover loan losses given customer mix, while suggestive of whether margins are likely to be in line with industry norms. </p>
         

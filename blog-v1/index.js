@@ -219,22 +219,62 @@ function plotCycles(data) {
     // Set margins
     var margin = {
         top: 30,
-        right: 10, 
+        right: 0, 
         bottom: 20, 
         left: 60
-    },
-    chart_width = 450,
-    chart_height = 250,
-    width = chart_width - margin.left - margin.right,
-    height = chart_height - margin.top - margin.bottom;
+        },
+        chart_width = "100%",
+        chart_height = 250,
+        width = "90%",
+        height = "80%",
+        xlegend1 = 220,
+        xlegend2 = xlegend1 + 15,
+        xlegend3 = xlegend2 + 40,
+        xlegend4 = xlegend3 + 15;
+//    width = chart_width - margin.left - margin.right,
+//    height = chart_height - margin.top - margin.bottom;
     // add svg
     var svg0 = dimple.newSvg(".chart1", chart_width, chart_height);
+    svg0.append("g")
+        .attr("transform", "translate(" + margin.left + ",20)")
+        .append("text")
+        .attr("class", "dataviztext-sm")
+        .attr("x", 0)
+        .attr("y", 0)
+        .style("text-anchor", "left")
+        .text("NUMBER OF LOANS (IN THOUSANDS)");
+    svg0.append("g")
+        .attr("transform", "translate(" + xlegend1 + ",12)")
+        .append("rect")
+        .attr("width", 10)
+        .attr("height", 10)
+        .style("fill", "#dedede")
+    svg0.append("g")
+        .attr("transform", "translate(" + xlegend2 + ",20)")
+        .append("text")
+        .attr("class", "dataviztext-sm")
+        .attr("x", 0)
+        .attr("y", 0)
+        .text("REPAID");
+    svg0.append("g")
+        .attr("transform", "translate(" + xlegend3 + ",12)")
+        .append("rect")
+        .attr("width", 10)
+        .attr("height", 10)
+        .style("fill", "#ee7272")
+    svg0.append("g")
+        .attr("transform", "translate(" + xlegend4 + ",20)")
+        .append("text")
+        .attr("class", "dataviztext-sm")
+        .attr("x", 0)
+        .attr("y", 0)
+        .text("DEFAULTED");
     // add chart
     var rateChart = new dimple.chart(svg0, loans);
     rateChart.setBounds(margin.left, margin.top, width, height);
     rateChart.defaultColors = [
-        new dimple.color("#4D555D", "#4D555D", 1), // med. gray    
-        new dimple.color("red", "red", 1), // red
+        new dimple.color("#dedede", "#dedede", 1), // light gray    
+        new dimple.color("#ee7272", "#ee7272", 1), // salmon
     ];
     var x = rateChart.addCategoryAxis("x", ["customer", "period"]);  
     x.addGroupOrderRule("period");
@@ -247,12 +287,10 @@ function plotCycles(data) {
         return ["Loan cycle: " + e.xField[1],
             (e.aggField[1] === "Defaulted" && e.cx === "New customers") ? ("New customer default rate: " + d3.format(".1%")(e.yValue/e.cy)) : (e.aggField[1] === "Defaulted" && e.cx === "Repeat customers") ? ("Repeat customer default rate: " + d3.format(".1%")(e.yValue/e.cy)) : null ];
     }
-    rateChart.addLegend(75, 5, 100, 80, "left");
-//    rateChart.ease = "linear";
     rateChart.staggerDraw = true;
     rateChart.draw(500);
     x.titleShape.remove();
-    y1.titleShape.text("number of loans"); 
+    y1.titleShape.remove(); 
 }
 
 // display results
@@ -262,19 +300,13 @@ function plotSummary(summary) {
     var text1 = d3.select(".gross-margin")
          .append("text")
          .text((100*summary.grossMargin).toFixed(1) + "%");
-    var text2 = d3.select("#table-header")
-            .append("text")
-            .text("Performance after " + summary.maxPeriod + " loan cycles");
-    var text3 = d3.select("#repay-rate")
-        .append("text")
-        .text(((1-summary.npl)*100).toFixed(1) + "%");
-    var text4 = d3.select("#npl")
+    var text4 = d3.select(".npl")
         .append("text")
         .text(((summary.npl)*100).toFixed(1) + "%");
-    var text5 = d3.select("#seq-len")
+    var text5 = d3.select(".seq-len")
         .append("text")
-        .text((summary.avgLoans).toFixed(1) + " loans");
-    var text6 = d3.select("#int-per-cust")
+        .text((summary.avgLoans).toFixed(1));
+    var text6 = d3.select(".int-per-cust")
         .append("text")
         .text((100*summary.avgInt).toFixed(1) + "%");
 }    
