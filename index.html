@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://dimplejs.org/dist/dimple.v2.1.6.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.5.0/lodash.min.js">
+    </script>
+    <meta charset="utf-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=PT+Serif:400,700' rel='stylesheet' type='text/css'>
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-77949723-1', 'auto');
+    ga('send', 'pageview');
+
+    </script>
+    </head>
+    
+    <body>
+
+    <div class="container">
+
+        <h1>Are Mobile Loans in Kenya Overpriced?</h1>
+        <p class="byline">By Rebecca Mayer, May 16, 2016</p>
+        <p class="intro">
+        Kenya's mobile money sector has attracted widespread international attention for transforming the financial opportunities of the country's unbanked and underbanked population. Most mobile loan products in Kenya have thus far retained a pricing structure characteristic of payday loans, namely short repayment terms with high annual percentage rates (APRs). Conventional payday lenders argue that high rates are necessary to offset the costs of high-risk borrowers and high operating costs due to storefront overheads, customer acquisition and loan processing costs. How can we evaluate whether the high APRs seen in Kenya really are justified, or whether there are signs of overpricing? <a href="#HowPayday">Read more</a>
+        </p>
+        
+        <p class="byline">Explore the mobile loan business model: Click on the input selector bars or enter new values in the input boxes to see the impact on lender performance.</p>
+       
+        <div id="datavizbox" class="container">
+          <div class="row">
+            <div class="col-md-12 top">
+                <h3>Loans to New and Repeat Customers</h3>
+                <p class="dataviztext">Repeat customers improve overall repayment rates and accumulate fees while new customers are key to growth</p><br>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-8 chart1"></div>
+            <div class="col-md-4">
+                <table>
+                    <tr>
+                        <hr class="hr-results"></hr>
+                        <p class="dataviztext-md"><a id="pop" href="#" data-toggle="popover" data-trigger="focus" data-placement="auto left" title="How Lender's Gross Margin is Calculated" data-content="In this model, Gross Margin is calculated as (Interest Received - COF - Loan Losses)/(Average Total Loans). This is a cumulative (rather than annualized) measure of return over the number of loan cycles used as input to the model. The metric is 'gross' because it does not include non-interest operating expenses or taxes.">LENDER'S GROSS MARGIN</A></p>
+                        <g class="gross-margin results"></g>
+                    </tr>
+                    <tr>
+                        <hr class="no-padding"></hr>
+                        <p class="dataviztext-md"><abbr title="Non-Performing Loans">NPL</abbr></p>
+                        <g class="npl results"></g>
+                    </tr>
+                    <tr>
+                        <hr class="no-padding"></hr>
+                        <p class="dataviztext-md">AVERAGE LOANS PER CUSTOMER</p>
+                        <g class="seq-len results"></g>
+                    </tr>
+                </table>
+            </div>
+          </div>  
+        <div class="row">         
+            <div class="col-md-6">
+                <hr></hr>
+                <h4>How fast is the customer base growing?</h4>
+                <p>Since 2012, Kenya's mobile loan market has been expanding rapidly.</p>
+            </div>
+            <div class="col-md-6">
+                <hr></hr>
+                <h4>How risky are new customers?</h4>
+                <p>Mobile lenders analyze thousands of data points to make lending decisions for customers with no credit history.</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <label for="custRate"><a title="Example: Loan cycle 1 new customers = 100. New customer growth rate = 5%. Loan cycle 2 new customers = 105.">New customer growth per loan cycle (%)</a></label>
+            </div>         
+            <div class="col-md-1">                
+                  <input name="custRate" id="custRate" class="inputField" type="text" value=2 size=2>
+            </div>
+            <div class="col-md-2">
+                <g class=".selector selector-custRate"></g>  
+            </div>
+            
+            <div class="col-md-3">
+                <label for="scoreAcc"><a title="Probability that a new customer will repay their loan">Initial credit score accuracy (%)</a></label>
+            </div>         
+            <div class="col-md-1">                
+                  <input name="scoreAcc" id="scoreAcc" class="inputField" type="text" value=95 size=2>
+            </div>
+            <div class="col-md-2">
+                <g class=".selector selector-scoreAcc"></g>  
+            </div>
+        </div>
+        <div class="row">         
+            <div class="col-md-6">
+                <hr></hr>
+                <h4><a id="pop" href="#" data-toggle="popover" data-trigger="focus" data-placement="auto right" title="How do simulated loan sequences differ from real-world data?" data-content="Simulated loan sequences have a regular pattern from cycle to cycle. In the real world, sequences are driven by borrowers' cash flow cycles. Payday loan customers who are paid monthly may take out as much as one loan per month, or 6-12 per year. Borrowers who are paid bi-weekly may take out up to 20-24 loans per year. Still others will borrow to cover occasional or seasonal shortfalls.">Simulate the effects of repeat borrowing</a></h4>
+                <p>Set the percentage of borrowers in good standing at the end of each loan cycle who immediately take out another loan</p>               
+            </div>
+            <div class="col-md-6">
+                <hr></hr>
+                <h4>Price the loan</h4>
+                <p>Interest or fees charged to customers must be high enough to offset losses from unrepaid loans</p>               
+            </div>           
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <label>Customer repeat rate (%)</label>
+            </div>
+            <div class="col-md-1">
+                <input name="repeatRate" id="repeatRate" class="inputField" type="text" value=80 min=0 max=100 step="any" size=2>
+            </div>
+            <div class="col-md-2">
+                <g class=".selector selector-repeatRate"></g>  
+            </div>
+            <div class="col-md-3">
+                <label>Interest rate (%)</label>
+            </div>
+            <div class="col-md-1">
+                <input name="intRate" id="intRate" class="inputField" type="text" value=7.5 size=2>
+            </div>
+            <div class="col-md-2">
+                <g class=".selector selector-intRate"></g>  
+            </div>
+        </div>
+        <div class="row">         
+            <div class="col-md-6">
+                <hr></hr>
+                <h4>Set the lender’s cost of funds (COF)</h4>
+                <p>This is what it costs the lender in interest to get the money to lend to customers. Typical COF rates for top Kenyan banks are 3% - 5%.</p>               
+            </div>
+            <div class="col-md-6">
+                <hr></hr>
+                <h4>Choose the number of loan cycles</h4>
+                <p>The length of a loan cycle in this model is 30 days, which is typical in Kenya.</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <label for="cofRate"><a href="http://www.investopedia.com/terms/c/costoffunds.asp" target="_blank">Cost of funds</a> (annual %)</label>
+            </div>
+            <div class="col-md-1">
+                <input name="cofRate" id="cofRate" class="inputField" type="text" value=4 size=2>
+            </div>
+            <div class="col-md-2">
+                <g class=".selector selector-cofRate"></g>  
+            </div>
+            <div class="col-md-3">
+                <label for="maxPeriod">Number of loan cycles </label>
+            </div>         
+            <div class="col-md-1">                
+                  <input name="maxPeriod" id="maxPeriod" class="inputField" type="text" value=12 size=2>
+            </div>
+            <div class="col-md-2">
+                <g class=".selector selector-maxPeriod"></g>  
+            </div>
+        </div>
+    </div>
+    <script src="index.js"></script>
+    <script>
+    $('a#pop').ready(function(){
+        $('[data-toggle="popover"]').popover({html:true, container: 'body'}).click(function(e) {e.preventDefault(); }); 
+    });
+    $(document).ready(function(){
+        $("a#nplPlot").on("click", function(){
+            $.post("Rates_d3.html", function(data){
+                $("#myModalDiv").html(data).fadeIn();
+            });
+        });
+    });
+    
+    </script>
+    
+    <h3><a name="HowPayday">Mobile Loan Products in Kenya</a></h3>
+    
+    <p>Kenya's mobile money sector has attracted widespread international attention for transforming the financial opportunities of the country's unbanked and underbanked population. The country has developed a thriving market in mobile loans: instantly approved personal loans, usually unsecured, managed via mobile phone. The loans are typically $15 - $20 in value, with a 30-day repayment term and a fee ranging from 2% to 10% of the loan amount. In Kenya's economy, mobile loans serve niches filled in other markets by credit cards, payday loans, checking account overdrafts and revolving lines of credit.  The three-year <a title="Compund Annual Growth Rate">CAGR</a> in the personal lending sector in Kenya is estimated at 18% by BPI Bank's equity research service <a name="noteBody1" class="noteBody" href="#note1">[1]</a>. This high rate of growth suggests that suppressed demand is quickly giving way to a broadening of financial inclusion.  Between November 2012 and December 2015, mobile lenders disbursed total loans valued at more than $820 million dollars <a name="noteBody2" class="noteBody" href="#note2">[2]</a>.</p>
+        
+    <p>Most mobile loan products in Kenya have thus far retained a pricing structure characteristic of payday loans, namely short repayment terms with high annual percentage rates (APRs). The fees of the top Kenyan mobile lenders generate APRs ranging from 24% to 120% <a name="noteBody3" class="noteBody" href="#note3">[3]</a>. Nevertheless, interest rates that intuitively seem high are not necessarily unjustified if the loans are priced to serve customer segments with correspondingly high levels of credit risk. (<a data-toggle="modal" href="#" data-target="#nplPlot">Click here</a> to explore this concept further). Conventional payday lenders argue that high rates are necessary to offset the costs of high-risk borrowers and high operating costs due to storefront overheads, customer acquisition and loan processing costs. How can we evaluate whether the high APRs seen in Kenya really are justified, or whether there are signs of overpricing? One way would be to look at the sector's non-performing loan (NPL) rates as well as the returns being generated. If mobile loans are earning disproportionate returns compared to comparable financial services, this would tend to confirm overpricing in the market. Since financial reports specific to this segment are not generally published, we can use a model to estimate lender's gross margin and other performance results based on typical features of the mobile loan products reported in Kenya. </p>  
+        
+        <h3>Low NPLs Suggest Effective Risk Management</h3>
+        
+        <p>The model illustrates the interplay of commercial factors that determine lender profitability in this type of business: interest rates and NPL rates, risk management through credit scoring, customer mix between new and repeat borrowers. Because Kenya's mobile loan services generally cut off credit at the first instance of non-repayment, the model reflects the fact that repeat borrowers tend to have lower default rates than new customers while driving up transaction volumes. On the cost side, the model's measure of gross margin ensures that COF and loan losses are accounted for. It does not include non-interest operating expenses, as there was no data on which to base an estimate, or taxes. As a result the model is most useful for assessing whether interest rates are priced high enough to cover loan losses given customer mix, while suggestive of whether margins are likely to be in line with industry norms. </p>
+        
+        <p>Where financials are available, Kenyan banks involved in mobile lending have reported NPL rates of 2% - 6% and <a title="Return on Average Assets">RoAA</a> of 4% - 5% (see table below). However, most of these indicators represent aggregate performance across all bank activities and don't apply directly to assessments of mobile loan pricing. Only the reports for M-Shwari and KCB MPESA are specific to the mobile loan segment.</p>
+        
+        <div class="container">
+            <div class="col-md-7">
+                <table class="table table-bordered table-condensed table-striped">
+                    <thead>
+                        <tr>
+                            <th>Bank / Service</th>
+                            <th>NPL</th>
+                            <th>RoAA</th>
+                            <th>Date of Financials</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Co-op Bank</td>
+                            <td>3.4%</td>
+                            <td>3.7%</td>
+                            <td>December 31, 2015</td>
+                        </tr>
+                        <tr>
+                            <td>Equity Bank Kenya Ltd</td>
+                            <td>3.5%</td>
+                            <td>5.4%</td>
+                            <td>March 31, 2016</td>
+                        </tr>
+                        <tr>
+                            <td>KCB Bank</td>
+                            <td>5.5%</td>
+                            <td>4.0%</td>
+                            <td>December 31, 2015</td>
+                        </tr>
+                        <tr>
+                            <td>KCB MPESA</td>
+                            <td>3.61%</td>
+                            <td>NA</td>
+                            <td>March 31, 2016</td>
+                        </tr>
+                        <tr>
+                            <td>M-Shwari</td>
+                            <td>1.93%</td>
+                            <td>NA</td>
+                            <td>March 31, 2016</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-5"></div>
+        </div>
+        <p>Now we turn to our simulation. The model suggests that a product with an average loan fee of 7.5%, 4% COF, initial credit score accuracy of 95%, and an average of 3.2 loans per customer per year, could achieve an NPL rate of 2.9% and earn a gross margin of about 55%. Increasing the interest rate to 10%, all else being equal, yields a gross margin of 88%. Meanwhile, reducing the interest rate to 2% yields a negative gross margin (loss) unless the initial credit score accuracy is increased from 95% to at least 97.4%. Although not definitive, these results suggest that returns for mobile loans priced at the mid- to upper end of the range in Kenya may be higher than normal for this type of financial service.</p>
+        
+        <p>One conclusion that can be drawn from the model is that it would be very difficult to achieve the low overall NPL rates reported by the leading mobile lenders in Kenya without high accuracy levels in the credit scoring algorithms for new customers. Low NPLs suggest that the market leaders have succeeded in managing the risk of mass market penetration at scale under current economic conditions. This includes periods of relative economic weakness and increasing <a title="Kenya Bank Reference Rate">KBRR</a> rates as was seen during the latter half of 2015 <a name="noteBody4" class="noteBody" href="#note4">[4]</a>. With lending risk contained in such a way, there is a question of why APRs of up to 120% are justified. If lenders were serving classes of customers with initial risk levels above 5%-10%, we would expect NPLs to be higher.</p>
+        
+        <p>Where pricing levels should ultimately land can't be argued definitively without more information on lenders' costs, but we can look to other markets for examples. In the United States, credit card delinquency rates have ranged from 2.11% to 6.81% over the past ten calendar years <a name="noteBody5" class="noteBody" href="#note5">[5]</a>. These delinquency rates are similar to the NPLs seen in Kenya. Over the same ten years, average APRs have ranged from 12.74% to 15.24% <a name="noteBody6" class="noteBody" href="#note6">[6]</a>. In the Kenyan loan pricing structure, this would be equivalent to mobile loan fees of 1.1% to 1.3%. Meanwhile, U.S. credit cards generally remained profitable: pre-tax returns generated by large U.S. credit card banks  ranged between 2.4% and 7.7% during the period, other than 2009 at the height of the financial crisis when the industry return dropped to -5.33% <a name="noteBody7" class="noteBody" href="#note7">[7]</a>. While I wouldn't expect Kenyan rates to fall to these levels any time soon, it is likely that rates can go down with competition. Alternatively, the model suggest that current loan pricing of 7%-10% monthly could support riskier customer segments while maintaining returns consistent with industry averages.</p>
+        
+        <h3>Conclusions</h3>
+        
+        <p>This analysis suggests that profit margins in Kenya are healthy for lenders that have cracked the credit scoring problem. Some products are priced high relative to reported NPLs, especially for the lowest-risk customers. Lower rate options exist for those who make the effort to shop around, and the market is attracting new entrants who will drive price and feature competition over time. Market indicators tracking repeat borrower behavior and cumulative interest paid would help regulators, consumer protection analysts and financial education providers respond to market trends in more targeted and effective ways. 
+        
+        <p>The low NPL rates evidenced in Kenya thus far have demonstrated that the risks of mass market lending in a lower middle income country can be successfully managed. The combination of data-driven behavioral credit scoring algorithms, attention to user experience management, the use of scalable digital delivery channels, and institutional arrangements to track loan defaulters has proven to be a successful model. The transparency and accessibility of mobile money payment systems in Kenya have attracted both domestic banks and foreign venture-backed lenders to enter the market. Over time, mobile lenders that survive will enhance competition and help price levels become better differentiated among risk classes. The market is already showing signs of this process.</p>
+        <br>
+        <hr></hr>
+        <h4>Notes </h4>
+        <p><a name="note1" class="footnote" href="#noteBody1">[1]</a> Motsi, Steve. <a target="_blank" href="https://www.co-opbank.co.ke/files/download/5edd1116b84a292">Kenyan Banks: Much to Gain.</a> BPI Capital Africa Equity Research, February 23, 2016.</p>
+        <p><a name="note2" class="footnote" href="#noteBody2">[2]</a> Compiled from published reports by Safaricom, CBA, KCB, Equity Group, and Co-op Bank.</p>
+        <p><a name="note3" class="footnote" href="#noteBody3">[3]</a> M-Shwari's fee of 7.5% with a 30-day repayment term equates to a nominal APR of 90%. In effective terms, the APR is closer to 105%, as the <a target="_blank" href="http://www.safaricom.co.ke/blog/m-shwari-three-years-later/">actual loan repayment period averages 26 days</a>. Equitel's Eazzy Loan charges rates from 2% to 10% per month depending on the customer's risk rating, yielding APRs of 24% to 120%. KCB MPESA offers rates ranging from 4% to 6% per month, yielding APRs of 48% to 72%.</p> 
+        <p><a name="note4" class="footnote" href="#noteBody4">[4]</a> Mungai, Richard. <a target="_blank" href="http://allafrica.com/stories/201510260763.html">"Kenya: KCB Reviews Cost of M-Pesa Loans As Interests Rise"</a>. The Star, 26 October 2015. Posted on allafrica.com.</p>
+        <p><a name="note5" class="footnote" href="#noteBody5">[5]</a> United States Federal Reserve Board, <a target="_blank" href="https://www.federalreserve.gov/releases/chargeoff/delallsa.htm">"Charge-Off and Delinquency Rates on Loans and Leases at Commercial Banks".</a> Accessed May 14, 2016.</p>
+        <p><a name="note6" class="footnote" href="#noteBody6">[6]</a> United States Federal Reserve Board, <a target="_blank" href="http://www.federalreserve.gov/releases/g19/HIST/cc_hist_tc_levels.html">"Terms of Credit at Commercial Banks and Finance Companies".</a> Accessed May 16, 2016.</p>
+        <p><a name="note7" class="footnote" href="#noteBody7">[7]</a> United States Federal reserve Board, <a target="_blank" href="https://www.federalreserve.gov/publications/other-reports/credit-card-profitability-2015-call-report-data.htm">"Report to the Congress on the Profitability of Credit Card Operations of Depository Institutions."</a> Accessed May 14, 2016.</p>
+    </div>
+    <div>
+    <br>
+    <p class="credits"><a href="#" data-toggle="popover" data-trigger="focus" data-placement="auto top" title="Acknowledgments" data-content="Many thanks to Marcy Mayer for her design suggestions and feedback.">Acknowledgments</a></p>
+    </div>
+    </body>
+    
+    <div class="modal" id="nplPlot" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-header">
+                <p class="caption">This chart shows the interest rate that exactly balances out losses from defaulted loans given the non-performing loan (NPL) rate. The spread must be widened further to cover other expenses like COF and operating costs.</p>
+            </div>
+          <div class="modal-body" id="plotContainer">
+            <p class="chartTitle">Interest Rate vs NPL</p>
+          </div>
+          <div class="modal-footer" style="text-align: center">
+            <p class="comment">scroll over plot to view rates</p>
+          </div>
+          <script type="text/javascript">  
+            var rate = d3.range(0, 1.01, 0.005),
+                npl, 
+                i,
+                nplData = [];
+            npl = rate.map(function(d) { 
+                return d / (1 + d);
+            });
+            for (i=0; i<202; i++) {
+                nplData.push({
+                    rateX: rate[i],
+                    NPL: npl[i],
+                    rateY: rate[i]        
+                })}
+            var margin = {top: 10, right: 120, bottom: 50, left: 60},
+                width = 350 - margin.left - margin.right,
+                height = 220 - margin.top - margin.bottom;
+            var x = d3.scale.linear().range([0, width]);
+            var y = d3.scale.linear().range([height, 0]);
+            var xAxis = d3.svg.axis().scale(x)
+                .orient("bottom").ticks(5).tickFormat(d3.format("%"))
+                .innerTickSize(-height);
+            var yAxis = d3.svg.axis().scale(y)
+                .orient("left").ticks(5).tickFormat(d3.format("%"))
+                .innerTickSize(-width);
+            var nplLine = d3.svg.line()
+                .x(function(d) {return +x(d.rateX);})
+                .y(function(d) {return +y(d.NPL);});
+            var interestLine = d3.svg.line()
+                .x(function(d) {return +x(d.rateX);})
+                .y(function(d) {return +y(d.rateY);});
+            var svg6 = d3.select("#plotContainer")
+                .append("svg")
+                .attr("width", 350)
+                .attr("height", 220)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            x.domain([0, 1.05]);
+            y.domain([0, 1.0]);
+            svg6.append("path")
+                .attr("class", "line1")
+                .attr("d", nplLine(nplData));
+            svg6.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis)
+                .append("text")
+                .attr("x", width/2)
+                .attr("y", 30)
+                .style("text-anchor", "middle")
+                .text("Interest rate");
+            svg6.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("x", -height/2)
+                .attr("y", 0)
+                .attr("dy", "-35px")
+                .style("text-anchor", "middle")
+                .text("NPL rate");
+            svg6.append("path")
+                .attr("class", "line2")
+                .attr("d", interestLine(nplData));
+            // http://www.d3noob.org/2014/07/my-favourite-tooltip-method-for-line.html
+            var lineSvg = svg6.append("g");
+            var bisectRate = d3.bisector(function(d) { return +d.rateX; }).left;
+            lineSvg.append("path")
+                .attr("class", "line1")
+                .attr("d", nplLine(nplData));
+            var focus = svg6.append("g").style("display", "none");
+            focus.append("line")
+                .attr("class", "x")
+                .style("stroke", "blue")
+                .style("stroke-dasharray", "3,3")
+                .style("opacity", 0.5)
+                .attr("y1", 0)
+                .attr("y2", height);
+            focus.append("line")
+                .attr("class", "y")
+                .style("stroke", "blue")
+                .style("stroke-dasharray", "3,3")
+                .style("opacity", 0.5)
+                .attr("x1", width)
+                .attr("x2", width);
+            focus.append("circle")
+                .attr("class", "y")
+                .style("fill", "none")
+                .style("stroke", "blue")
+                .attr("r", 4);
+            focus.append("text")
+                .attr("class", "y1")
+                .style("stroke", "white")
+                .style("stroke-width", "3.5px")
+                .style("opacity", 0.8)
+                .attr("dx", 8)
+                .attr("dy", "-.3em");
+            focus.append("text")
+                .attr("class", "y2")
+                .attr("dx", 8)
+                .attr("dy", "-.3em");
+            focus.append("text")
+                .attr("class", "y3")
+                .style("stroke", "white")
+                .style("stroke-width", "3.5px")
+                .style("opacity", 0.8)
+                .attr("dx", 8)
+                .attr("dy", "1em");
+            focus.append("text")
+                .attr("class", "y4")
+                .attr("dx", 8)
+                .attr("dy", "1em");
+            svg6.append("rect")
+                .attr("width", width)
+                .attr("height", height)
+                .style("fill", "none")
+                .style("pointer-events", "all")
+                .on("mouseover", function() {focus.style("display", null);})
+                .on("mouseout", function() {focus.style("display", "none");})
+                .on("mousemove", mousemove);
+            function mousemove() {
+                var pct = d3.format(".1%");
+                var x0 = x.invert(d3.mouse(this)[0]),              
+                    i = bisectRate(nplData, x0, 1),                   
+                    d0 = nplData[i - 1],                              
+                    d1 = nplData[i],    
+                    d;
+                    if (isNaN(d1)) {
+                    	d = d0;
+                    }
+                    else if (isNaN(d0)) {
+                    	    d = d1;
+                    }
+                    else {
+                    	    d = x0 - +d0.rateX > +d1.rateX - x0 ? d1 : d0;
+                    }
+                focus.select("circle.y")
+                    .attr("transform", "translate(" + x(+d.rateX) + "," + y(+d.NPL) + ")");
+                focus.select("text.y1")
+                    .attr("transform", "translate(" + x(+d.rateX) + "," +y(+d.NPL) + ")")
+                    .text("Interest rate: " + pct(+d.rateX));
+                focus.select("text.y2")
+                    .attr("transform", "translate(" + x(+d.rateX) + "," + y(+d.NPL) + ")")
+                    .text("Interest rate: " + pct(+d.rateX)); 
+                focus.select("text.y3")
+                    .attr("transform", "translate(" + x(+d.rateX) + "," + y(+d.NPL) + ")")
+                    .text("NPL: " + pct(+d.NPL));
+                focus.select("text.y4")
+                    .attr("transform", "translate(" + x(+d.rateX) + "," + y(+d.NPL) + ")")
+                    .text("NPL: " + pct(d.NPL));
+                focus.select(".x")
+                    .attr("transform","translate(" + x(+d.rateX) + "," + y(+d.rateX) + ")")
+                    .attr("y2", x(+d.rateX));
+                focus.select(".y")
+                    .attr("transform","translate(" + width * -1 + "," + y(+d.NPL) + ")")
+                    .attr("x2", width+width);
+            }
+          </script>
+      </div>
+    </div>
+    
+
